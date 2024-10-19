@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "793825014632",
+    "project_id": "fpune2024-237c8",
+    "storage_bucket": "fpune2024-237c8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:793825014632:android:7a52d96dd9edea9d905cdd",
+        "android_client_info": {
+          "package_name": "com.proyecto_inglove"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKy6LKcfzuhv0ZOVBKtmES1Wv25FT-kA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
