@@ -7,6 +7,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import FirebaseLogin from './src/firebase-login/FirebaseLogin';
 import FirebaseRecuperarCuenta from './src/firebase-login/FirebaseRecuperarCuenta';
 import FirebaseCrearCuenta from './src/firebase-login/FirebaseCrearCuenta';
+import GerenteHome from './src/screens/gerenteHome';
+import MeseroHome from './src/screens/meseroHome';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +21,8 @@ const App = () => {
         <Stack.Screen name="FirebaseLogin" component={FirebaseLogin} />
         <Stack.Screen name="FirebaseRecuperarCuenta" component={FirebaseRecuperarCuenta} />
         <Stack.Screen name="FirebaseCrearCuenta" component={FirebaseCrearCuenta} />
+        <Stack.Screen name="GerenteHome" component={GerenteHome} />
+        <Stack.Screen name="MeseroHome" component={MeseroHome} />
       </Stack.Navigator>
     </NavigationContainer>
   );

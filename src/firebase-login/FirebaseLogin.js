@@ -10,20 +10,20 @@ const FirebaseLogin = ({ navigation }) => {
     const handleLogin = async () => {
         try {
             const querySnapshot = await firestore()
-                .collection('usuarios')
+                .collection('usuario')
                 .where('nombre', '==', nombre)
-                .where('password', '==', password)
+                .where('contraseña', '==', password)
                 .get();
 
             if (!querySnapshot.empty) {
                 const userData = querySnapshot.docs[0].data();
                 Alert.alert('Inicio de sesión exitoso', `Bienvenido, ${userData.nombre}.`);
 
-               /* if (userData.rol === '0') {
+               if (userData.rol == '0') {
                     navigation.navigate('GerenteHome'); // Redirigir al panel del gerente
                 } else {
                     navigation.navigate('MeseroHome'); // Redirigir al panel del mesero
-                }*/
+                }
             } else {
                 Alert.alert('Error', 'Nombre o contraseña incorrectos.');
             }
