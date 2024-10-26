@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { Button, Input, Text } from '@rneui/themed';
-import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { Picker } from '@react-native-picker/picker';
 
 const FirebaseCrearCuenta = ({ navigation }) => {
     const [nombre, setNombre] = useState('');
@@ -11,24 +11,17 @@ const FirebaseCrearCuenta = ({ navigation }) => {
 
     const handleSignUp = async () => {
         try {
-            // Verificar si el usuario actual es gerente
-            const user = auth().currentUser;
-            const userDoc = await firestore().collection('usuarios').doc(user.uid).get();
-
-            if (userDoc.exists && userDoc.data().rol === '0') { // Solo el gerente puede crear usuarios
-                // Crear un nuevo usuario en Firestore
-                await firestore().collection('usuarios').add({
-                    nombre,
-                    password,
-                    rol,
-                });
-                Alert.alert('Cuenta creada exitosamente');
-                navigation.navigate('FirebaseLogin');
-            } else {
-                Alert.alert('Acceso denegado', 'Solo los gerentes pueden crear nuevas cuentas.');
-            }
+            // Crear un nuevo usuario en Firestore
+            await firestore().collection('usuario').add({
+                nombre,
+                password,
+                rol,
+            });
+            Alert.alert('Cuenta creada exitosamente');
+            navigation.navigate('ListarCuentas');
         } catch (error) {
             console.error("Error al crear cuenta: ", error.message);
+            Alert.alert('Error', 'Ha ocurrido un error al crear la cuenta. Por favor, intenta nuevamente.');
         }
     };
 
@@ -41,6 +34,7 @@ const FirebaseCrearCuenta = ({ navigation }) => {
                 leftIcon={{ type: 'material', name: 'person' }}
                 value={nombre}
                 onChangeText={setNombre}
+                inputContainerStyle={styles.input}
             />
 
             <Input
@@ -49,7 +43,17 @@ const FirebaseCrearCuenta = ({ navigation }) => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                inputContainerStyle={styles.input}
             />
+
+            <Picker
+                selectedValue={rol}
+                style={styles.picker}
+                onValueChange={(itemValue) => setRol(itemValue)}
+            >
+                <Picker.Item label="Gerente" value="0" />
+                <Picker.Item label="Mesero" value="1" />
+            </Picker>
 
             <Button title="Registrar" buttonStyle={styles.button} onPress={handleSignUp} />
         </View>
@@ -58,8 +62,10 @@ const FirebaseCrearCuenta = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: 'center', padding: 20 },
-    title: { textAlign: 'center', marginBottom: 20 },
+    title: { textAlign: 'center', marginBottom: 20, color: 'black' }, // Letras en negro
     button: { backgroundColor: '#2089dc', marginTop: 20 },
+    picker: { height: 50, width: '100%', marginBottom: 20 },
+    input: { borderColor: 'black', borderWidth: 1, borderRadius: 5 }, // Estilo de entrada
 });
 
 export default FirebaseCrearCuenta;

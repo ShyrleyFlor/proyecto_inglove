@@ -11,15 +11,8 @@ const GerenteHome = () => {
 
             <View style={styles.buttonContainer}>
                 <Button
-                    title="Crear Usuario"
-                    onPress={() => navigation.navigate('CrearCuenta')}
-                />
-            </View>
-
-            <View style={styles.buttonContainer}>
-                <Button
-                    title="Recuperar Contraseña"
-                    onPress={() => navigation.navigate('RecuperarContrasena')}
+                    title="Listar Cuentas"
+                    onPress={() => navigation.navigate('ListarCuentas')}
                 />
             </View>
         </View>
