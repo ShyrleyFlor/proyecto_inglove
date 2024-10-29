@@ -16,6 +16,7 @@ import ListarCategoria from './src/categorias/listarCategoria';
 import ListarCategoriag from './src/categorias/listarCategoria-g';
 import EditCategoria from './src/categorias/editarCategoria';
 import CreateCategoria from './src/categorias/crearCategoria';
+import ListarMenu from './src/menu/listarMenu';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,7 @@ const App = () => {
         <Stack.Screen name="ListarCategoriag" component={ListarCategoriag} />
         <Stack.Screen name="EditCategoria" component={EditCategoria} />
         <Stack.Screen name="CreateCategoria" component={CreateCategoria} />
+        <Stack.Screen name="ListarMenu" component={ListarMenu} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -23,6 +23,13 @@ const GerenteHome = () => {
                 />
             </View>
 
+            <View style={styles.buttonContainer}>
+                <Button
+                    title="Menú"
+                    onPress={() => navigation.navigate('ListarMenu')} // Asegúrate de que 'ListarMenu' sea el nombre correcto de tu ruta
+                />
+            </View>
+
 
         </View>
     );

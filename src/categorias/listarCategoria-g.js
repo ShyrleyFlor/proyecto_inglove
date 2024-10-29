@@ -81,7 +81,7 @@ const ListarCategoria = () => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Categorías</Text>
-            <Button title="Crear Nueva Categoría" onPress={crearCategoria} color="#1d3557" />
+            <Button title="Nueva Categoría" onPress={crearCategoria} color="#f06e65" />
             <FlatList
                 data={categorias}
                 keyExtractor={(item) => item.id}
@@ -93,12 +93,12 @@ const ListarCategoria = () => {
                             <Button
                                 title="Editar"
                                 onPress={() => editarCategoria(item)}
-                                color="#1d3557"
+                                color="#f44c71"
                             />
                             <Button
                                 title="Eliminar"
                                 onPress={() => eliminarCategoria(item.id)}
-                                color="#e63946"
+                                color="#ba6fcf"
                             />
                         </View>
                     </View>
