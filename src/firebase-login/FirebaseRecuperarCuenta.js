@@ -1,45 +1,69 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Button, Input, Text } from "@rneui/themed";
-import auth from '@react-native-firebase/auth';
+import { View, StyleSheet, Alert } from 'react-native';
+import { Input, Button, Text } from '@rneui/themed';
+import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
+const FirebaseRecuperarCuenta = () => {
+    const [usuario, setUsuario] = useState('');
+    const navigation = useNavigation();
 
-const FirebaseRecuperarCuenta = ({ navigation }) => {
-
-    const [email, setEmail] = useState('');
-
-    const handleResetPassword = async () => {
+    // Función para verificar si el usuario existe en la base de datos
+    const handleContinuar = async () => {
         try {
-            await auth().sendPasswordResetEmail(email);
-            console.log('Correo de recuperación enviado');
-            navigation.navigate('FirebaseLogin');
+            const querySnapshot = await firestore()
+                .collection('usuario')
+                .where('nombre', '==', usuario) // Cambia 'nombre' al nombre correcto del campo en Firestore
+                .get();
+
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0];
+                const userId = userDoc.id;
+
+                // Navega a la pantalla de Nueva Contraseña con el usuario y su ID
+                navigation.navigate('NuevaContraseña', { usuario, userId });
+            } else {
+                Alert.alert('Error', 'El usuario no existe');
+            }
         } catch (error) {
-            console.error("Error al enviar correo de recuperación: ", error.message);
+            console.error('Error al verificar usuario:', error);
+            Alert.alert('Error', 'Hubo un problema al verificar el usuario. Inténtalo nuevamente.');
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text h3 style={styles.title}>Recuperar Contraseña</Text>
-
+            <Text h4 style={styles.title}>Recuperar Cuenta</Text>
             <Input
-                placeholder="Correo Electrónico"
-                leftIcon={{ type: 'material', name: 'email' }}
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
+                label="Nombre de Usuario"
+                placeholder="Ingresa tu nombre de usuario"
+                value={usuario}
+                onChangeText={setUsuario}
             />
-
-            <Button title="Enviar Correo de Recuperación" buttonStyle={styles.button} onPress={handleResetPassword} />
+            <Button
+                title="Continuar"
+                buttonStyle={styles.button}
+                onPress={handleContinuar}
+            />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: 'center', padding: 20 },
-    title: { textAlign: 'center', marginBottom: 20 },
-    button: { backgroundColor: '#2089dc', marginTop: 20 },
+    container: {
+        flex: 1,
+        padding: 20,
+        justifyContent: 'center',
+    },
+    title: {
+        textAlign: 'center',
+        marginBottom: 20,
+        color: 'black',
+    },
+    button: {
+        backgroundColor: '#007bff',
+        marginTop: 10,
+    },
 });
 
 export default FirebaseRecuperarCuenta;

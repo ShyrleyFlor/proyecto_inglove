@@ -11,12 +11,24 @@ const FirebaseCrearCuenta = ({ navigation }) => {
 
     const handleSignUp = async () => {
         try {
+            // Verificar si el usuario ya existe
+            const querySnapshot = await firestore()
+                .collection('usuario')
+                .where('nombre', '==', nombre)
+                .get();
+
+            if (!querySnapshot.empty) {
+                Alert.alert('Error', 'Este usuario ya existe. Por favor, elige otro nombre.');
+                return;
+            }
+
             // Crear un nuevo usuario en Firestore
             await firestore().collection('usuario').add({
                 nombre,
                 password,
                 rol,
             });
+
             Alert.alert('Cuenta creada exitosamente');
             navigation.navigate('ListarCuentas');
         } catch (error) {
@@ -62,10 +74,15 @@ const FirebaseCrearCuenta = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: 'center', padding: 20 },
-    title: { textAlign: 'center', marginBottom: 20, color: 'black' }, // Letras en negro
+    title: { textAlign: 'center', marginBottom: 20, color: 'black' },
     button: { backgroundColor: '#2089dc', marginTop: 20 },
-    picker: { height: 50, width: '100%', marginBottom: 20 },
-    input: { borderColor: 'black', borderWidth: 1, borderRadius: 5 }, // Estilo de entrada
+    picker: {
+        height: 50,
+        width: '100%',
+        marginBottom: 20,
+        color: 'black',
+    },
+    input: { borderColor: 'black', borderWidth: 1, borderRadius: 5 },
 });
 
 export default FirebaseCrearCuenta;

@@ -7,14 +7,23 @@ const GerenteHome = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Bienvenido, Gerente</Text>
+            <Text style={styles.title}>Bienvenido!</Text>
 
             <View style={styles.buttonContainer}>
                 <Button
-                    title="Listar Cuentas"
+                    title="Cuentas"
                     onPress={() => navigation.navigate('ListarCuentas')}
                 />
             </View>
+
+            <View style={styles.buttonContainer}>
+                <Button
+                    title="Categorias"
+                    onPress={() => navigation.navigate('ListarCategoriag')}
+                />
+            </View>
+
+
         </View>
     );
 };
@@ -30,6 +39,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 40,
+        color: '#333',
     },
     buttonContainer: {
         marginBottom: 20,

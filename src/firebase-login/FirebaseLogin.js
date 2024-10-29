@@ -17,7 +17,6 @@ const FirebaseLogin = ({ navigation }) => {
 
             if (!querySnapshot.empty) {
                 const userData = querySnapshot.docs[0].data();
-                Alert.alert('Inicio de sesión exitoso', `Bienvenido, ${userData.nombre}.`);
 
                if (userData.rol == '0') {
                     navigation.navigate('GerenteHome'); // Redirigir al panel del gerente
@@ -51,7 +50,15 @@ const FirebaseLogin = ({ navigation }) => {
                 secureTextEntry
             />
 
-            <Button title="Iniciar Sesión" buttonStyle={styles.button} onPress={handleLogin} />
+            <Button title="Entrar" buttonStyle={styles.button} onPress={handleLogin} />
+
+            <Button
+                title="Recuperar Cuenta"
+                type="clear"
+                buttonStyle={styles.buttonrec}
+                titleStyle={styles.recoverText}
+                onPress={() => navigation.navigate('FirebaseRecuperarCuenta')}
+            />
         </View>
     );
 };
@@ -60,6 +67,17 @@ const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: 'center', padding: 20 },
     title: { textAlign: 'center', marginBottom: 20 },
     button: { backgroundColor: '#2089dc', marginTop: 20 },
+
+    recoverText: {
+        color: '#f8f9fa',
+    },
+
+    buttonrec: {
+        marginTop: 10,
+        backgroundColor: '#c1121f',
+    },
+
+    
 });
 
 export default FirebaseLogin;
