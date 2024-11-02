@@ -1,56 +1,77 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-
-// Mapa de imágenes
-const imagenes = {
-    'imagen1.png': require('../assets/hambur.png'),
-    'imagen2.png': require('../assets/bebida.png'),
-    // Agrega más imágenes según sea necesario
-};
+import { Icon } from '@rneui/themed';
 
 const ListarCategoria = () => {
     const [categorias, setCategorias] = useState([]);
-    const [image, setImage] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const navigation = useNavigation();
 
     useEffect(() => {
-        const obtenerCategorias = async () => {
-            try {
-                const snapshot = await firestore().collection('categorias').get();
+        const unsubscribe = firestore()
+            .collection('categorias')
+            .onSnapshot(snapshot => {
                 const listaCategorias = snapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data(),
                 }));
                 setCategorias(listaCategorias);
-            } catch (error) {
+                setLoading(false);
+            }, error => {
                 console.error("Error al obtener las categorías:", error);
-            } finally {
-                setImage(false);
-            }
-        };
+                setLoading(false);
+            });
 
-        obtenerCategorias();
+        return () => unsubscribe();
     }, []);
 
-    const obtenerImagen = (nombreArchivo) => {
-        return imagenes[nombreArchivo] || require('../assets/default.png'); // Imagen de respaldo
+    const navegarAMenu = (categoria) => {
+        console.log('Navegando a menú con categoría:', categoria); // Para depuración
+        navigation.navigate('Menu', {
+            categoriaId: categoria.id,
+            categoriaNombre: categoria.nombre,
+        });
     };
 
-    if (image) {
+    if (loading) {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
 
+    const obtenerIcono = (categoria) => {
+        // Puedes mapear categorías a iconos específicos
+        switch(categoria.nombre.toLowerCase()) {
+            case 'bebidas':
+                return 'local-drink';
+            case 'pizzas':
+                return 'local-pizza';
+            case 'hamburguesas':
+                return 'lunch-dining';
+            default:
+                return 'restaurant-menu';
+        }
+    };
+
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Categorías</Text>
             <FlatList
                 data={categorias}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <View style={styles.categoriaContainer}>
-                        <Image source={obtenerImagen(item.imagen)} style={styles.icono} />
+                    <TouchableOpacity
+                        style={styles.categoriaContainer}
+                        onPress={() => navegarAMenu(item)}
+                    >
+                        <Icon 
+                            name={obtenerIcono(item)} 
+                            size={30} 
+                            color="#666"
+                            style={styles.icono}
+                        />
                         <Text style={styles.nombre}>{item.nombre}</Text>
-                    </View>
+                    </TouchableOpacity>
                 )}
             />
         </View>
@@ -64,13 +85,6 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#fff',
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-        color: '#000',
-    },
     categoriaContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -83,6 +97,7 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         marginRight: 15,
+        color: '#780000',
     },
     nombre: {
         fontSize: 18,

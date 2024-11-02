@@ -30,10 +30,10 @@ const EditarUsuario = () => {
 
     return (
         <View style={styles.container}>
-            <Text h4 style={styles.textBlack}>Editar Usuario</Text>
             <Input
                 label="Nombre"
                 value={nombre}
+                leftIcon={{ type: 'material', name: 'person' }}
                 onChangeText={setNombre}
                 placeholder="Nombre del usuario"
             />
@@ -58,10 +58,7 @@ const EditarUsuario = () => {
 
 // Estilos
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-    },
+    container: { flex: 1, justifyContent: 'center', padding: 20 },
     textBlack: {
         color: 'black',
         fontSize: 18,

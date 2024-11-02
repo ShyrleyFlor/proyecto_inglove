@@ -3,7 +3,7 @@ import { View, StyleSheet, Alert } from 'react-native';
 import { Button, Input, Text } from '@rneui/themed';
 import firestore from '@react-native-firebase/firestore';
 
-const FirebaseLogin = ({ navigation }) => {
+const FirebaseLogin = ({ navigation, setUserRole }) => {
     const [nombre, setNombre] = useState('');
     const [password, setPassword] = useState('');
 
@@ -17,12 +17,8 @@ const FirebaseLogin = ({ navigation }) => {
 
             if (!querySnapshot.empty) {
                 const userData = querySnapshot.docs[0].data();
-
-               if (userData.rol == '0') {
-                    navigation.navigate('GerenteHome'); // Redirigir al panel del gerente
-                } else {
-                    navigation.navigate('MeseroHome'); // Redirigir al panel del mesero
-                }
+                setUserRole(userData.rol); // Establecer el rol del usuario como número
+                navigation.navigate('Cerrar Sesion'); // Redirigir a la navegación principal
             } else {
                 Alert.alert('Error', 'Nombre o contraseña incorrectos.');
             }
@@ -67,17 +63,8 @@ const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: 'center', padding: 20 },
     title: { textAlign: 'center', marginBottom: 20 },
     button: { backgroundColor: '#2089dc', marginTop: 20 },
-
-    recoverText: {
-        color: '#f8f9fa',
-    },
-
-    buttonrec: {
-        marginTop: 10,
-        backgroundColor: '#c1121f',
-    },
-
-    
+    recoverText: { color: '#f8f9fa' },
+    buttonrec: { marginTop: 10, backgroundColor: '#c1121f' },
 });
 
 export default FirebaseLogin;

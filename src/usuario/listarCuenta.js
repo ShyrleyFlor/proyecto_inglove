@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { FlatList, View, StyleSheet, Alert } from 'react-native';
-import { ListItem, Text, Button } from '@rneui/themed';
+import { ListItem, Button } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const ListarCuenta = () => {
     const [data, setData] = useState([]);
     const [rtdata, setRTData] = useState([]);
-    const navigation = useNavigation(); 
+    const navigation = useNavigation();
 
     // Función para cargar datos una sola vez
     async function loadData() {
         try {
-            const usuariosSnapshot = await firestore().collection('usuarios').get(); // Cambia 'usuarios' al nombre de tu colección
+            const usuariosSnapshot = await firestore().collection('usuarios').get();
             const usuarios = usuariosSnapshot.docs.map(doc => ({
                 ...doc.data(),
                 key: doc.id,
@@ -71,68 +72,80 @@ const ListarCuenta = () => {
     };
 
     const handleEdit = (item) => {
-        // Navegar a la pantalla de edición y pasar el objeto `usuario` completo como parámetro
         navigation.navigate('EditarUsuario', { usuario: item });
     };
 
     return (
-        <FlatList
-            data={combinedData}
-            keyExtractor={item => item.key}
-            renderItem={({ item }) => (
-                <ListItem bottomDivider>
-                    <ListItem.Content>
-                        <ListItem.Title style={styles.textBlack}>{item.nombre}</ListItem.Title>
-                        <ListItem.Subtitle style={styles.textBlack}>
-                            {item.rol == '0' ? 'Gerente' : 'Mesero'}
-                        </ListItem.Subtitle>
-                    </ListItem.Content>
-                    <Button
-                            title="Editar"
+        <View style={styles.container}>
+            {/* Botón Crear Usuario en la parte superior */}
+            <Button
+                buttonStyle={styles.createButton}
+                icon={<Icon name="add" size={20} color="white"  />} // Icono de "+"
+                onPress={() => navigation.navigate('FirebaseCrearCuenta')} // Navega a la pantalla de crear usuario
+            />
+
+            <FlatList
+                data={combinedData}
+                keyExtractor={item => item.key}
+                renderItem={({ item }) => (
+                    <ListItem bottomDivider>
+                        <ListItem.Content>
+                            <ListItem.Title style={styles.textBlack}>{item.nombre}</ListItem.Title>
+                            <ListItem.Subtitle style={styles.textBlack}>
+                                {item.rol === '0' ? 'Gerente' : 'Mesero'}
+                            </ListItem.Subtitle>
+                        </ListItem.Content>
+                        {/* Icono de Editar */}
+                        <Button
+                            icon={<Icon name="edit" size={20} color="white" />}
                             buttonStyle={styles.editButton}
                             onPress={() => handleEdit(item)} // Navegar a la pantalla de edición
                         />
-                    <Button
-                        title="Eliminar"
-                        buttonStyle={styles.deleteButton}
-                        onPress={() => handleDelete(item.key)}
-                    />
-                </ListItem>
-            )}
-            ListHeaderComponent={() => (
-                <View style={{ padding: 10, alignItems: 'center' }}>
-                    <Text h4 style={styles.textBlack}>Usuarios</Text>
-                    <Button
-                            title="Crear Usuario"
-                            buttonStyle={styles.createButton}
-                            onPress={() => navigation.navigate('FirebaseCrearCuenta')} // Navega a la pantalla de crear usuario
+                        {/* Icono de Eliminar */}
+                        <Button
+                            icon={<Icon name="delete" size={20} color="white" />}
+                            buttonStyle={styles.deleteButton}
+                            onPress={() => handleDelete(item.key)}
                         />
-                </View>
-            )}
-        />
+                    </ListItem>
+                )}
+            />
+        </View>
     );
 };
 
 // Estilos
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 10,
+        position: 'relative',
+    },
     textBlack: {
-        color: 'black', // Color de texto negro
+        color: 'black',
         fontSize: 18,
-        marginBottom: 5,
-        marginLeft: 10,
-
+        marginRight: 10,
     },
     deleteButton: {
-        backgroundColor: '#ff3b30', // Color de botón de eliminar
+        backgroundColor: '#ff3b30',
         marginLeft: 10,
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
     },
     createButton: {
-        backgroundColor: '#4CAF50', // Color verde para el botón de creación
-        marginTop: 10,
+        backgroundColor: '#4CAF50',
+        borderRadius: 20,
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        marginBottom: 10, // Espacio entre el botón y la lista
     },
     editButton: {
-        backgroundColor: '#007bff', // Color de botón de editar (azul)
+        backgroundColor: '#007bff',
         marginLeft: 10,
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
     },
 });
 

@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         color: 'black',
     },
-    input: { borderColor: 'black', borderWidth: 1, borderRadius: 5 },
+    //input: { borderColor: 'black', borderWidth: 1, borderRadius: 5 },
 });
 
 export default FirebaseCrearCuenta;

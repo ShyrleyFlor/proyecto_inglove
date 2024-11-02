@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { Icon } from '@rneui/themed';
 import firestore from '@react-native-firebase/firestore';
 
 const MenuScreen = ({ route, navigation }) => {
@@ -42,6 +43,42 @@ const MenuScreen = ({ route, navigation }) => {
     return () => unsubscribe();
   }, [route, route?.params?.categoriaId]);
 
+  const handleEliminar = async (itemId) => {
+    Alert.alert(
+      'Confirmar eliminación',
+      '¿Estás seguro de que deseas eliminar este menú?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          onPress: async () => {
+            try {
+              await firestore()
+                .collection('menu')
+                .doc(itemId)
+                .delete();
+              Alert.alert('Éxito', 'Menú eliminado correctamente');
+            } catch (error) {
+              Alert.alert('Error', 'No se pudo eliminar el menú');
+              console.error(error);
+            }
+          },
+          style: 'destructive'
+        }
+      ]
+    );
+  };
+
+  const handleEditar = (item) => {
+    navigation.navigate('EditarMenu', {
+      item: item,
+      categoriaId: route.params.categoriaId
+    });
+  };
+
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -68,6 +105,22 @@ const MenuScreen = ({ route, navigation }) => {
               <Text style={styles.menuDescription}>{item.descripcion}</Text>
               <Text style={styles.menuPrice}>{item.precio} GS</Text>
             </View>
+            <View style={styles.actionButtons}>
+              <Icon
+                name="edit"
+                color="#2089dc"
+                size={24}
+                onPress={() => handleEditar(item)}
+                style={styles.actionIcon}
+              />
+              <Icon
+                name="delete"
+                color="#ff3b30"
+                size={24}
+                onPress={() => handleEliminar(item.id)}
+                style={styles.actionIcon}
+              />
+            </View>
           </View>
         )}
         ListEmptyComponent={() => (
@@ -79,6 +132,7 @@ const MenuScreen = ({ route, navigation }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -99,7 +153,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
     borderRadius: 8,
     elevation: 2,
+    alignItems: 'center',
   },
+  actionButtons: {
+    flexDirection: 'row', // Cambiado para alinear los iconos horizontalmente
+    padding: 8,
+    justifyContent: 'space-between',
+    width: 80, // Ancho fijo para los botones
+},
+actionIcon: {
+  marginHorizontal: 4, // Espacio entre iconos
+},
   menuImage: {
     width: 80,
     height: 80,
@@ -108,6 +172,7 @@ const styles = StyleSheet.create({
   menuInfo: {
     flex: 1,
     marginLeft: 12,
+    marginRight: 8,
   },
   menuName: {
     fontSize: 18,

@@ -1,23 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import {
-    View,
-    Text,
-    FlatList,
-    Image,
-    StyleSheet,
-    ActivityIndicator,
-    Button,
-    Alert,
-} from 'react-native';
-import firestore from '@react-native-firebase/firestore';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
-// Mapa de imágenes
-const imagenes = {
-    'imagen1.png': require('../assets/hambur.png'),
-    'imagen2.png': require('../assets/bebida.png'),
-    // Agrega más imágenes según sea necesario
-};
+import firestore from '@react-native-firebase/firestore';
+import { Icon, FAB, Button } from '@rneui/themed';
 
 const ListarCategoria = () => {
     const [categorias, setCategorias] = useState([]);
@@ -27,99 +12,152 @@ const ListarCategoria = () => {
     useEffect(() => {
         const unsubscribe = firestore()
             .collection('categorias')
-            .onSnapshot(
-                snapshot => {
-                    const listaCategorias = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data(),
-                    }));
-                    setCategorias(listaCategorias);
-                    setLoading(false);
-                },
-                error => {
-                    console.error("Error al obtener las categorías:", error);
-                    setLoading(false);
-                }
-            );
+            .onSnapshot(snapshot => {
+                const listaCategorias = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                setCategorias(listaCategorias);
+                setLoading(false);
+            }, error => {
+                console.error("Error al obtener las categorías:", error);
+                setLoading(false);
+            });
 
-        return () => unsubscribe(); // Desuscribirse cuando el componente se desmonte
+        return () => unsubscribe();
     }, []);
 
-    const obtenerImagen = (nombreArchivo) => {
-        return imagenes[nombreArchivo] || require('../assets/default.png');
-    };
-
-    const eliminarCategoria = (id) => {
-        Alert.alert(
-            "Confirmar Eliminación",
-            "¿Estás seguro de que deseas eliminar esta categoría?",
-            [
-                { text: "Cancelar", style: "cancel" },
-                { text: "Eliminar", onPress: async () => {
-                    try {
-                        await firestore().collection('categorias').doc(id).delete();
-                    } catch (error) {
-                        console.error("Error al eliminar la categoría:", error);
-                    }
-                }},
-            ]
-        );
-    };
-
-    const editarCategoria = (categoria) => {
-        navigation.navigate('EditCategoria', { categoriaId: categoria.id });
-    };
-
-    const crearCategoria = () => {
-        navigation.navigate('CreateCategoria');
+    const navegarAMenu = (categoria) => {
+        console.log('Navegando a menú con categoría:', categoria); // Para depuración
+        navigation.navigate('Menu', {
+            categoriaId: categoria.id,
+            categoriaNombre: categoria.nombre,
+        });
     };
 
     if (loading) {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
 
+    const obtenerIcono = (categoria) => {
+        // Puedes mapear categorías a iconos específicos
+        switch (categoria.nombre.toLowerCase()) {
+            case 'bebidas':
+                return 'local-drink';
+            case 'pizzas':
+                return 'local-pizza';
+            case 'hamburguesas':
+                return 'lunch-dining';
+            case 'postres':
+                return 'cake';
+            default:
+                return 'restaurant-menu';
+        }
+    };
+
+    const eliminarCategoria = async (categoriaId) => {
+        Alert.alert(
+            "Confirmar eliminación",
+            `¿Está seguro que desea eliminar la categoría?`,
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel"
+                },
+                {
+                    text: "Eliminar",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await firestore()
+                                .collection('categorias')
+                                .doc(categoriaId)
+                                .delete();
+                            console.log('Categoría eliminada con éxito');
+                        } catch (error) {
+                            console.error('Error al eliminar la categoría:', error);
+                            Alert.alert("Error", "No se pudo eliminar la categoría");
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Categorías</Text>
-            <Button title="Nueva Categoría" onPress={crearCategoria} color="#f06e65" />
+            {/* Botón Crear Menú en la parte superior */}
+            <Button
+                title="Crear Menú"
+                icon={{
+                    name: 'add',
+                    type: 'material',
+                    size: 20,
+                    color: 'white',
+                }}
+                iconContainerStyle={{ marginRight: 10 }}
+                buttonStyle={styles.createButton}
+                onPress={() => navigation.navigate('CrearMenu')}
+            />
             <FlatList
                 data={categorias}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <View style={styles.categoriaContainer}>
-                        <Image source={obtenerImagen(item.imagen)} style={styles.icono} />
+                    <TouchableOpacity
+                        style={styles.categoriaContainer}
+                        onPress={() => navegarAMenu(item)}
+                    >
+                        <Icon
+                            name={obtenerIcono(item)}
+                            size={30}
+                            color="#666"
+                            style={styles.icono}
+                        />
                         <Text style={styles.nombre}>{item.nombre}</Text>
-                        <View style={styles.botonContainer}>
-                            <Button
-                                title="Editar"
-                                onPress={() => editarCategoria(item)}
-                                color="#f44c71"
-                            />
-                            <Button
-                                title="Eliminar"
+                        <View style={styles.botonesContainer}>
+                            <TouchableOpacity
+                                style={styles.botonAccion}
+                                onPress={() => navigation.navigate('EditCategoria', { categoria: item })}
+                            >
+                                <Icon
+                                    name="edit"
+                                    size={24}
+                                    color="#2089dc"
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.botonAccion}
                                 onPress={() => eliminarCategoria(item.id)}
-                                color="#ba6fcf"
-                            />
+                            >
+                                <Icon
+                                    name="delete"
+                                    size={24}
+                                    color="#ff0000"
+                                />
+                            </TouchableOpacity>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 )}
+            />
+            {/* Botón flotante para crear menú */}
+            <FAB
+                icon={{ name: 'add', color: 'white' }}
+                color="#2089dc"
+                placement="right"
+                style={styles.fab}
+                onPress={() => navigation.navigate('CreateCategoria')}
             />
         </View>
     );
 };
 
+// Estilos...
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
         backgroundColor: '#fff',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-        color: '#000',
     },
     categoriaContainer: {
         flexDirection: 'row',
@@ -128,24 +166,33 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: '#f9f9f9',
         borderRadius: 10,
-        justifyContent: 'space-between',
+        justifyContent: 'space-between', // Añadido para espaciar los elementos
+    },
+    botonesContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    botonAccion: {
+        padding: 5,
+        marginLeft: 10,
     },
     icono: {
         width: 50,
         height: 50,
         marginRight: 15,
+        color: '#780000',
     },
     nombre: {
         fontSize: 18,
         fontWeight: '500',
         color: '#000',
-        flex: 1,
     },
-    botonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: 150,
-    },
+    fab: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
+    }
 });
 
 export default ListarCategoria;
