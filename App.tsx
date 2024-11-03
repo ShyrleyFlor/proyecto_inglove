@@ -15,10 +15,14 @@ import ListarCategoria from './src/categorias/listarCategoria';
 import EditCategoria from './src/categorias/editarCategoria';
 import CreateCategoria from './src/categorias/crearCategoria';
 import ListarMenu from './src/menu/listarMenu';
-import ListarMenuG from './src/menu/listarMenug';
 import ListarCategoriaG from './src/categorias/listarCategoria-g';
 import EditarMenu from './src/menu/editarMenu';
 import CrearMenu from './src/menu/crearMenu';
+import ListarMesa from './src/mesa/listarmesag';
+import ListarMesasM from './src/mesa/listarmesa';
+import CrearPedidos from './src/pedidos/crearPedidos';
+import EnCursoPedido from './src/pedidos/encursoPedido';
+import ListarPedidos from './src/pedidos/listarpedidos';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -65,11 +69,12 @@ const CategoriaStackScreenGerente = () => {
       />
       <CategoriaStack.Screen
         name="Menu"
-        component={ListarMenuG}
+        component={ListarMesasM}
         options={({route}) => ({
           title: route.params?.categoriaNombre || 'Menú',
         })}
       />
+      
     </CategoriaStack.Navigator>
   );
 };
@@ -100,19 +105,61 @@ const TabNavigator: React.FC<TabNavigatorProps> = ({rol}) => {
               ),
             }}
           />
+          <Tab.Screen
+            name="Mesas"
+            component={ListarMesa}
+            options={{
+              // eslint-disable-next-line react/no-unstable-nested-components
+              tabBarIcon: ({color, size}) => (
+                <Icon name="table-restaurant" color={color} size={size} />
+              ),
+            }}
+          />
         </>
       )}
       {rol != 0 && (
-        <Tab.Screen
-          name="Categorias"
-          component={CategoriaStackScreenMesero}
-          options={{
-            // eslint-disable-next-line react/no-unstable-nested-components
-            tabBarIcon: ({color, size}) => (
-              <Icon name="category" color={color} size={size} />
-            ),
-          }}
-        />
+        <>
+          <Tab.Screen
+            name="Categorias"
+            component={CategoriaStackScreenMesero}
+            options={{
+              // eslint-disable-next-line react/no-unstable-nested-components
+              tabBarIcon: ({color, size}) => (
+                <Icon name="category" color={color} size={size} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Mesas"
+            component={ListarMesasM}
+            options={{
+              // eslint-disable-next-line react/no-unstable-nested-components
+              tabBarIcon: ({color, size}) => (
+                <Icon name="table-restaurant" color={color} size={size} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Pedidos"
+            component={CrearPedidos}
+            options={{
+              // eslint-disable-next-line react/no-unstable-nested-components
+              tabBarIcon: ({color, size}) => (
+                <Icon name="shopping-cart" color={color} size={size} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Listar Pedidos"
+            component={ListarPedidos}
+            options={{
+              // eslint-disable-next-line react/no-unstable-nested-components
+              tabBarIcon: ({color, size}) => (
+                <Icon name="shopping-cart" color={color} size={size} />
+              ),
+            }}
+          />
+        </>
       )}
     </Tab.Navigator>
   );
@@ -149,6 +196,8 @@ const App = () => {
         <Stack.Screen name="CreateCategoria" component={CreateCategoria} />
         <Stack.Screen name="EditarMenu" component={EditarMenu} />
         <Stack.Screen name="CrearMenu" component={CrearMenu} />
+        <Stack.Screen name="ListarMesa" component={ListarMesa} />
+        <Stack.Screen name='EnCursoPedido' component={EnCursoPedido} />
       </Stack.Navigator>
     </NavigationContainer>
   );
