@@ -15,10 +15,20 @@ const EnCursoPedido = ({ route, navigation }) => {
             .where('mesaId', '==', firestore().collection('mesa').doc(mesaId))
             .onSnapshot(snapshot => {
                 if (!snapshot.empty) {
-                    const pedidoData = snapshot.docs[0].data();
+                    // Obtiene el primer documento de la lista de resultados
+                    const doc = snapshot.docs[0];
+                    const pedidoData = {
+                        id: doc.id, // Agregar el ID del documento
+                        ...doc.data(), // Agregar los datos del documento
+                    };
+                    console.log("Datos del pedido:", pedidoData); // Verificar los datos del pedido en la consola
                     setPedido(pedidoData);
                     setPrecioTotal(pedidoData.precioTotal);
+                } else {
+                    console.log("No se encontraron pedidos para la mesa con ID:", mesaId);
                 }
+            }, error => {
+                console.error("Error al obtener el pedido:", error);
             });
 
         const unsubscribeMenu = firestore()
@@ -29,6 +39,8 @@ const EnCursoPedido = ({ route, navigation }) => {
                     ...doc.data(),
                 }));
                 setMenuItems(listaMenu);
+            }, error => {
+                console.error("Error al obtener el menú:", error);
             });
 
         return () => {
@@ -36,6 +48,7 @@ const EnCursoPedido = ({ route, navigation }) => {
             unsubscribeMenu();
         };
     }, [mesaId]);
+
 
     const agregarItemPedido = (menuItem) => {
         if (pedido) {
@@ -53,6 +66,7 @@ const EnCursoPedido = ({ route, navigation }) => {
     const finalizarPedido = async () => {
         if (pedido) {
             try {
+                console.log("ID del pedido:", pedido.id); // Verifica el ID del pedido
                 await firestore().collection('pedidos').doc(pedido.id).update({
                     items: pedido.items,
                     precioTotal: precioTotal,
@@ -74,12 +88,14 @@ const EnCursoPedido = ({ route, navigation }) => {
                     status: 1 // Cambiar el estado a en curso
                 });
                 Alert.alert("Pedido en curso", "El pedido ha sido marcado como en curso.");
+                navigation.goBack(); // Regresar a la pantalla de lista después de actualizar
             } catch (error) {
                 console.error("Error al marcar el pedido como en curso:", error);
-                Alert.alert("Error", "No se pudo marcar el pedido como en curso.");
+                Alert.alert("Error", "No se pudo actualizar el estado del pedido.");
             }
         }
     };
+
 
     return (
         <View style={styles.container}>
