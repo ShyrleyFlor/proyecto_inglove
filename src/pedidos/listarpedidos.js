@@ -32,27 +32,27 @@ const ListarPedidos = ({ navigation }) => {
                             try {
                                 const menuDoc = await item.menuId.get(); // Obtener el documento del menú
                                 if (menuDoc.exists) {
-                                    console.log("menuDoc data:", menuDoc.data());
+                                    //console.log("menuDoc data:", menuDoc.data());
                                     return {
                                         ...item,
                                         menuDetalles: menuDoc.data()
                                     };
                                 } else {
-                                    console.warn("El documento de menú no existe para menuId:", item.menuId.id);
+                                    // console.warn("El documento de menú no existe para menuId:", item.menuId.id);
                                     return {
                                         ...item,
                                         menuDetalles: null
                                     };
                                 }
                             } catch (error) {
-                                console.error("Error obteniendo datos del menú:", error);
+                                // console.error("Error obteniendo datos del menú:", error);
                                 return {
                                     ...item,
                                     menuDetalles: null
                                 };
                             }
                         } else {
-                            console.warn("menuId es inválido o no existe en el item:", item);
+                            //console.warn("menuId es inválido o no existe en el item:", item);
                             return item;
                         }
                     }));
@@ -110,7 +110,7 @@ const ListarPedidos = ({ navigation }) => {
                 data={filtrarPedidos()}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
-                    console.log("Rendering item:", item.menuDetalles);
+                    //console.log("Rendering item:", item.menuDetalles);
                     return (
                         <View style={styles.pedidoContainer}>
                             <View style={styles.rowContainer}>

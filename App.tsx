@@ -115,6 +115,16 @@ const TabNavigator: React.FC<TabNavigatorProps> = ({rol}) => {
               ),
             }}
           />
+          <Tab.Screen
+            name="Listar Pedidos"
+            component={ListarPedidos}
+            options={{
+              // eslint-disable-next-line react/no-unstable-nested-components
+              tabBarIcon: ({color, size}) => (
+                <Icon name="list" color={color} size={size} />
+              ),
+            }}
+          />
         </>
       )}
       {rol != 0 && (
@@ -155,7 +165,7 @@ const TabNavigator: React.FC<TabNavigatorProps> = ({rol}) => {
             options={{
               // eslint-disable-next-line react/no-unstable-nested-components
               tabBarIcon: ({color, size}) => (
-                <Icon name="shopping-cart" color={color} size={size} />
+                <Icon name="list" color={color} size={size} />
               ),
             }}
           />
