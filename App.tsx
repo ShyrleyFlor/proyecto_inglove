@@ -23,6 +23,7 @@ import ListarMesasM from './src/mesa/listarmesa';
 import CrearPedidos from './src/pedidos/crearPedidos';
 import EnCursoPedido from './src/pedidos/encursoPedido';
 import ListarPedidos from './src/pedidos/listarpedidos';
+import MostrarPedido from './src/pedidos/mostrarPedido';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -208,6 +209,7 @@ const App = () => {
         <Stack.Screen name="CrearMenu" component={CrearMenu} />
         <Stack.Screen name="ListarMesa" component={ListarMesa} />
         <Stack.Screen name='EnCursoPedido' component={EnCursoPedido} />
+        <Stack.Screen name='MostrarPedido' component={MostrarPedido}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

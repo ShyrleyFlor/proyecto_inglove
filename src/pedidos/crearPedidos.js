@@ -106,7 +106,18 @@ const CrearPedidos = () => {
             return;
         }
 
+        const nuevoPedido = {
+            items: pedidoItems.map(item => ({
+                menuId: firestore().collection('menu').doc(item.menuId), // Guardar como referencia
+                cantidad: item.cantidad,
+            })),
+            mesaId: firestore().collection('mesa').doc(selectedMesa), // Guardar como referencia
+            precioTotal: precioTotal,
+            status: 1 // Estado en curso
+        };
+
         try {
+            await firestore().collection('pedidos').add(nuevoPedido);
             // Cambiar el estado de la mesa a ocupada
             await firestore().collection('mesa').doc(selectedMesa).update({ status: 1 });
             Alert.alert("Mesa en curso", "La mesa ha sido marcada como ocupada.");

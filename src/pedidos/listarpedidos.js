@@ -10,7 +10,7 @@ const ListarPedidos = ({ navigation }) => {
         const unsubscribe = firestore()
             .collection('pedidos')
             .onSnapshot(async snapshot => {
-                console.log("Snapshot received:", snapshot.docs.length);
+                //console.log("Snapshot received:", snapshot.docs.length);
 
                 const listaPedidos = await Promise.all(snapshot.docs.map(async doc => {
                     const pedidoData = {
@@ -84,20 +84,11 @@ const ListarPedidos = ({ navigation }) => {
         if (pedido.status === 1) {
             navigation.navigate('EnCursoPedido', { mesaId: pedido.mesaId.id });
         } else {
-            const itemsDetalle = pedido.items.map(item => {
-                const detalles = item.menuDetalles
-                    ? `\n- ${item.menuDetalles.nombre}: ${item.cantidad} x GS ${item.menuDetalles.precio}`
-                    : '\n- Detalles no disponibles';
-                return detalles;
-            }).join('');
-
-            Alert.alert(
-                "Detalles del Pedido",
-                `Mesa: ${pedido.mesaNumero || 'N/A'}\nTotal: GS ${pedido.precioTotal || 0}\nItems:${itemsDetalle}`,
-                [{ text: "OK" }] // Botón para cerrar la alerta
-            );
+            // Navegar a la pantalla MostrarPedidos para pedidos finalizados
+            navigation.navigate('MostrarPedido', { mesaId: pedido.mesaId.id });
         }
     };
+
 
     return (
         <View style={styles.container}>
@@ -110,7 +101,6 @@ const ListarPedidos = ({ navigation }) => {
                 data={filtrarPedidos()}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
-                    //console.log("Rendering item:", item.menuDetalles);
                     return (
                         <View style={styles.pedidoContainer}>
                             <View style={styles.rowContainer}>
