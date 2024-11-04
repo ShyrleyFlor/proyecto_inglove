@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, Alert, Modal, Image, TextInput } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, Alert, Image, TextInput } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 
 const EnCursoPedido = ({ route, navigation }) => {
     const { mesaId } = route.params; // Obtener el ID de la mesa desde los parámetros de la ruta
-    const [pedido, setPedido] = useState(null);
+    const [pedido, setPedido] = useState({ items: [] }); // Inicializar pedido con un array vacío
     const [menuItems, setMenuItems] = useState([]);
     const [filteredMenuItems, setFilteredMenuItems] = useState([]); // Inicialmente vacío
-    const [modalVisible, setModalVisible] = useState(false);
     const [numeroMesa, setNumeroMesa] = useState(null);
     const [precioTotal, setPrecioTotal] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedMenuItem, setSelectedMenuItem] = useState(null);
-    const [cantidad, setCantidad] = useState(1); // Cantidad por defecto
 
     useEffect(() => {
         const obtenerNumeroMesa = async () => {
@@ -75,22 +72,33 @@ const EnCursoPedido = ({ route, navigation }) => {
         setFilteredMenuItems(filtered); // Actualizar solo con los menús filtrados
     };
 
-    const agregarItemPedido = () => {
-        if (selectedMenuItem) {
-            setPedido(prevItems => {
-                const existingItem = prevItems.items.find(item => item.menuId.id === selectedMenuItem.id);
-                if (existingItem) {
-                    existingItem.cantidad += cantidad; // Aumentar la cantidad
+    const agregarItemPedido = (menuItem) => {
+        setPedido(prevItems => {
+            const existingItem = prevItems.items.find(item => item.menuId.id === menuItem.id);
+            if (existingItem) {
+                existingItem.cantidad += 1; // Aumentar la cantidad
+            } else {
+                prevItems.items.push({ menuId: firestore().collection('menu').doc(menuItem.id), cantidad: 1 });
+            }
+            return { ...prevItems }; // Retornar el pedido actualizado
+        });
+        setPrecioTotal(prevTotal => prevTotal + menuItem.precio);
+    };
+
+    const disminuirItemPedido = (menuItem) => {
+        setPedido(prevItems => {
+            const existingItem = prevItems.items.find(item => item.menuId.id === menuItem.id);
+            if (existingItem) {
+                if (existingItem.cantidad > 1) {
+                    existingItem.cantidad -= 1; // Disminuir la cantidad
                 } else {
-                    prevItems.items.push({ menuId: firestore().collection('menu').doc(selectedMenuItem.id), cantidad });
+                    // Si la cantidad es 1, eliminar el item del pedido
+                    prevItems.items = prevItems.items.filter(item => item.menuId.id !== menuItem.id);
                 }
-                return { ...prevItems }; // Retornar el pedido actualizado
-            });
-            setPrecioTotal(prevTotal => prevTotal + (selectedMenuItem.precio * cantidad));
-            setModalVisible(false); // Cerrar el modal
-            setSelectedMenuItem(null); // Reiniciar selección
-            setCantidad(1); // Reiniciar cantidad
-        }
+            }
+            return { ...prevItems }; // Retornar el pedido actualizado
+        });
+        setPrecioTotal(prevTotal => prevTotal - menuItem.precio); // Actualizar el total
     };
 
     const finalizarPedido = async () => {
@@ -123,7 +131,7 @@ const EnCursoPedido = ({ route, navigation }) => {
                 await firestore().collection('pedidos').doc(pedido.id).update({
                     items: pedido.items,
                     precioTotal: precioTotal,
-                    status: 1, // Cambiar el estado a finalizado
+                    status: 1, // Cambiar el estado a en curso
                 });
 
                 // Actualizar el estado de la mesa a ocupada (1)
@@ -157,10 +165,7 @@ const EnCursoPedido = ({ route, navigation }) => {
                             <Text style={styles.menuText}>{item.nombre} - GS {item.precio}</Text>
                             <Text style={styles.menuDescription}>{item.descripcion}</Text>
                         </View>
-                        <Button title="Agregar" onPress={() => {
-                            setSelectedMenuItem(item);
-                            setModalVisible(true);
-                        }} />
+                        <Button title="Agregar" onPress={() => agregarItemPedido(item)} />
                     </View>
                 )}
             />
@@ -183,6 +188,10 @@ const EnCursoPedido = ({ route, navigation }) => {
                                         <View style={styles.menuInfo}>
                                             <Text style={styles.menuText}>{menuItem.nombre} - GS {menuItem.precio}</Text>
                                             <Text style={styles.menuDescription}>Cantidad: {item.cantidad}</Text>
+                                            <View style={styles.quantityContainer}>
+                                                <Button title="-" onPress={() => disminuirItemPedido(menuItem)} />
+                                                <Button title="+" onPress={() => agregarItemPedido(menuItem)} />
+                                            </View>
                                         </View>
                                     </>
                                 )}
@@ -196,20 +205,6 @@ const EnCursoPedido = ({ route, navigation }) => {
                 <Button title="Finalizar Pedido" onPress={finalizarPedido} />
                 <Button title="En Curso" onPress={marcarEnCurso} />
             </View>
-
-            {/* Modal para seleccionar cantidad */}
-            <Modal visible={modalVisible} animationType="slide">
-                <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Agregar {selectedMenuItem?.nombre}</Text>
-                    <View style={styles.quantityContainer}>
-                        <Button title="-" onPress={() => setCantidad(Math.max(1, cantidad - 1))} />
-                        <Text>{cantidad}</Text>
-                        <Button title="+" onPress={() => setCantidad(cantidad + 1)} />
-                    </View>
-                    <Button title="Agregar al Pedido" onPress={agregarItemPedido} />
-                    <Button title="Cerrar" onPress={() => setModalVisible(false)} />
-                </View>
-            </Modal>
         </View>
     );
 };
@@ -258,6 +253,10 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
     },
+    quantityContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -268,23 +267,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 20,
         color: 'black',
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semi-transparente
-    },
-    modalTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        color: 'white',
-    },
-    quantityContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 10,
     },
 });
 
