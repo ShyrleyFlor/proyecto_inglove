@@ -3,7 +3,7 @@ import { View, Text, Button, FlatList, StyleSheet, Alert, Image, TextInput } fro
 import firestore from '@react-native-firebase/firestore';
 
 const EnCursoPedido = ({ route, navigation }) => {
-    const { mesaId } = route.params; // Obtener el ID de la mesa desde los parámetros de la ruta
+    const { mesaId, pedidoId } = route.params;
     const [pedido, setPedido] = useState({ items: [] }); // Inicializar pedido con un array vacío
     const [menuItems, setMenuItems] = useState([]);
     const [filteredMenuItems, setFilteredMenuItems] = useState([]); // Inicialmente vacío
@@ -25,46 +25,52 @@ const EnCursoPedido = ({ route, navigation }) => {
             }
         };
 
-        obtenerNumeroMesa();
+        const obtenerPedidoPorId = async () => {
+            try {
+                const docRef = firestore().collection('pedidos').doc(pedidoId);
+                const docSnapshot = await docRef.get();
 
-        const unsubscribePedido = firestore()
-            .collection('pedidos')
-            .where('mesaId', '==', firestore().collection('mesa').doc(mesaId))
-            .onSnapshot(snapshot => {
-                if (!snapshot.empty) {
-                    const doc = snapshot.docs[0];
+                if (docSnapshot.exists) {
                     const pedidoData = {
-                        id: doc.id,
-                        ...doc.data(),
+                        id: docSnapshot.id,
+                        ...docSnapshot.data(),
                     };
                     console.log("Datos del pedido:", pedidoData);
                     setPedido(pedidoData);
                     setPrecioTotal(pedidoData.precioTotal);
                 } else {
-                    console.log("No se encontraron pedidos para la mesa con ID:", mesaId);
+                    console.log("No se encontró el pedido con el ID:", pedidoId);
                 }
-            }, error => {
+            } catch (error) {
                 console.error("Error al obtener el pedido:", error);
-            });
+            }
+        };
 
-        const unsubscribeMenu = firestore()
-            .collection('menu')
-            .onSnapshot(snapshot => {
-                const listaMenu = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-                setMenuItems(listaMenu);
-                setFilteredMenuItems(listaMenu); // Inicialmente mostrar todos los menús
-            }, error => {
-                console.error("Error al obtener el menú:", error);
-            });
+        const obtenerMenu = () => {
+            return firestore()
+                .collection('menu')
+                .onSnapshot(snapshot => {
+                    const listaMenu = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data(),
+                    }));
+                    setMenuItems(listaMenu);
+                    setFilteredMenuItems(listaMenu); // Inicialmente mostrar todos los menús
+                }, error => {
+                    console.error("Error al obtener el menú:", error);
+                });
+        };
+
+        // Ejecuta las funciones para obtener datos
+        obtenerNumeroMesa();
+        obtenerPedidoPorId();
+        const unsubscribeMenu = obtenerMenu();
 
         return () => {
-            unsubscribePedido();
             unsubscribeMenu();
         };
-    }, [mesaId]);
+    }, [mesaId, pedidoId]);
+
 
     const handleSearch = (text) => {
         setSearchTerm(text);

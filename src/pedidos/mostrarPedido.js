@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet, Alert, Modal, Image } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 
+
 const MostrarPedido = ({ route }) => {
-    const { mesaId } = route.params; // Obtener el ID de la mesa desde los parámetros de la ruta
+    const { mesaId, pedidoId } = route.params; // Obtener el ID de la mesa desde los parámetros de la ruta
     const [pedido, setPedido] = useState(null);
     const [menuItems, setMenuItems] = useState([]);
     const [numeroMesa, setNumeroMesa] = useState(null);
@@ -28,30 +29,21 @@ const MostrarPedido = ({ route }) => {
 
         const obtenerDatos = async () => {
             try {
-                const mesaDoc = await firestore().collection('mesa').doc(mesaId).get();
-                if (mesaDoc.exists) {
-                    setNumeroMesa(mesaDoc.data().numero);
-                } else {
-                    console.error("No se encontró la mesa con el ID:", mesaId);
-                }
+                const docRef = firestore().collection('pedidos').doc(pedidoId);
+                const docSnapshot = await docRef.get();
 
-                const pedidoSnapshot = await firestore()
-                    .collection('pedidos')
-                    .where('mesaId', '==', firestore().collection('mesa').doc(mesaId))
-                    .get();
-
-                if (!pedidoSnapshot.empty) {
-                    const doc = pedidoSnapshot.docs[0];
+                if (docSnapshot.exists) {
                     const pedidoData = {
-                        id: doc.id,
-                        ...doc.data(),
+                        id: docSnapshot.id,
+                        ...docSnapshot.data(),
                     };
                     console.log("Datos del pedido:", pedidoData);
                     setPedido(pedidoData);
                     setPrecioTotal(pedidoData.precioTotal);
                 } else {
-                    console.log("No se encontraron pedidos para la mesa con ID:", mesaId);
+                    console.log("No se encontró el pedido con el ID:", pedidoId);
                 }
+
 
                 const menuSnapshot = await firestore().collection('menu').get();
                 const listaMenu = menuSnapshot.docs.map(doc => ({
@@ -65,7 +57,7 @@ const MostrarPedido = ({ route }) => {
         };
 
         obtenerDatos();
-    }, [mesaId]);
+    }, [mesaId, pedidoId]);
 
 
     return (

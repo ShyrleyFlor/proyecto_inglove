@@ -22,10 +22,20 @@ const FirebaseLogin = ({ navigation, setUserRole }) => {
             } else {
                 Alert.alert('Error', 'Nombre o contraseña incorrectos.');
             }
+            setNombre('');
+            setPassword('');
         } catch (error) {
             console.error("Error al iniciar sesión: ", error.message);
         }
     };
+
+    const handleRecoverAccount = () => {
+        // Reiniciar los inputs de login
+        setNombre('');
+        setPassword('');
+        navigation.navigate('FirebaseRecuperarCuenta');
+    };
+
 
     return (
         <View style={styles.container}>
@@ -53,7 +63,7 @@ const FirebaseLogin = ({ navigation, setUserRole }) => {
                 type="clear"
                 buttonStyle={styles.buttonrec}
                 titleStyle={styles.recoverText}
-                onPress={() => navigation.navigate('FirebaseRecuperarCuenta')}
+                onPress={handleRecoverAccount}
             />
         </View>
     );
