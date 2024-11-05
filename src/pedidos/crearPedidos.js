@@ -164,9 +164,10 @@ const CrearPedidos = () => {
                                 <Text style={styles.menuText}>{item.nombre} - GS {item.precio}</Text>
                                 <Text style={styles.menuDescription}>{item.descripcion}</Text>
                                 <View style={styles.buttonContainer}>
-                                    <Button title="+" onPress={() => agregarItemPedido(item)} />
-                                    <Text style={styles.quantityText}>{existingItem ? existingItem.cantidad : 0}</Text>
                                     <Button title="-" onPress={() => disminuirItemPedido(item)} />
+
+                                    <Text style={styles.quantityText}>{existingItem ? existingItem.cantidad : 0}</Text>
+                                    <Button title="+" onPress={() => agregarItemPedido(item)} />
                                 </View>
                             </View>
                         </View>
