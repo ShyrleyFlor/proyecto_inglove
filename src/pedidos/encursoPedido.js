@@ -55,7 +55,7 @@ const EnCursoPedido = ({ route, navigation }) => {
                         ...doc.data(),
                     }));
                     setMenuItems(listaMenu);
-                    setFilteredMenuItems(listaMenu); // Inicialmente mostrar todos los menús
+                    setFilteredMenuItems([]); // Inicialmente mostrar todos los menús
                 }, error => {
                     console.error("Error al obtener el menú:", error);
                 });
@@ -74,8 +74,12 @@ const EnCursoPedido = ({ route, navigation }) => {
 
     const handleSearch = (text) => {
         setSearchTerm(text);
-        const filtered = menuItems.filter(item => item.nombre.toLowerCase().includes(text.toLowerCase()));
-        setFilteredMenuItems(filtered); // Actualizar solo con los menús filtrados
+        if (text.trim() === '') {
+            setFilteredMenuItems([]); // No mostrar nada si el campo de búsqueda está vacío
+        } else {
+            const filtered = menuItems.filter(item => item.nombre.toLowerCase().includes(text.toLowerCase()));
+            setFilteredMenuItems(filtered); // Actualizar solo con los menús filtrados
+        }
     };
 
     const agregarItemPedido = (menuItem) => {
@@ -124,7 +128,7 @@ const EnCursoPedido = ({ route, navigation }) => {
 
                 Alert.alert("Pase en caja", "El pedido ha sido finalizado.");
                 navigation.goBack(); // Regresar a la pantalla anterior
-                
+
             } catch (error) {
                 console.error("Error al finalizar el pedido:", error);
                 Alert.alert("Error", "No se pudo finalizar el pedido.");
@@ -160,8 +164,10 @@ const EnCursoPedido = ({ route, navigation }) => {
             <TextInput
                 style={styles.searchInput}
                 placeholder="Buscar menú..."
+                placeholderTextColor="black" // Establecer el color del texto del placeholder a negro
                 value={searchTerm}
                 onChangeText={handleSearch}
+                selectionColor="black" // Cambiar el color del cursor a negro
             />
             <FlatList
                 data={filteredMenuItems}
