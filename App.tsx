@@ -76,7 +76,6 @@ const CategoriaStackScreenGerente = () => {
           title: route.params?.categoriaNombre || 'Menú',
         })}
       />
-      
     </CategoriaStack.Navigator>
   );
 };
@@ -209,8 +208,8 @@ const App = () => {
         <Stack.Screen name="EditarMenu" component={EditarMenu} />
         <Stack.Screen name="CrearMenu" component={CrearMenu} />
         <Stack.Screen name="ListarMesa" component={ListarMesa} />
-        <Stack.Screen name='EnCursoPedido' component={EnCursoPedido} />
-        <Stack.Screen name='MostrarPedido' component={MostrarPedido}/>
+        <Stack.Screen name="EnCursoPedido" component={EnCursoPedido} />
+        <Stack.Screen name="MostrarPedido" component={MostrarPedido} />
       </Stack.Navigator>
     </NavigationContainer>
   );

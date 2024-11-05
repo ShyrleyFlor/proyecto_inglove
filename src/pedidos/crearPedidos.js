@@ -101,6 +101,7 @@ const CrearPedidos = () => {
     };
 
     const marcarEnCurso = async () => {
+
         if (!selectedMesa) {
             Alert.alert("Error", "Por favor, selecciona una mesa.");
             return;
@@ -121,6 +122,11 @@ const CrearPedidos = () => {
             // Cambiar el estado de la mesa a ocupada
             await firestore().collection('mesa').doc(selectedMesa).update({ status: 1 });
             Alert.alert("Mesa en curso", "La mesa ha sido marcada como ocupada.");
+
+            // Limpiar los campos después de la operación
+            setPedidoItems([]);
+            setPrecioTotal(0);
+            setSelectedMesa(null);
         } catch (error) {
             console.error("Error al marcar la mesa como en curso:", error);
             Alert.alert("Error", "No se pudo marcar la mesa como en curso.");
@@ -181,7 +187,7 @@ const CrearPedidos = () => {
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.modalView}>
-                    <Text>¿Confirmar envío a cocina?</Text>
+                    <Text style={styles.title}>¿Confirmar envío a cocina?</Text>
                     <Button title="Confirmar" onPress={confirmarEnvioACocina} />
                     <Button title="Cancelar" onPress={() => setModalVisible(false)} />
                 </View>
@@ -236,7 +242,8 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
+        justifyContent: 'space-around',
+        marginTop: 20,
     },
     quantityText: {
         marginHorizontal: 10,

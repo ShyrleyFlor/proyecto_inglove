@@ -40,15 +40,21 @@ const ListarMesas = () => {
             <View style={styles.filtrosContainer}>
                 <Button
                     title="Todas"
+                    type={filtroStatus === null ? "solid" : "outline"}
                     onPress={() => setFiltroStatus(null)}
+                    buttonStyle={styles.filtroButton}
                 />
                 <Button
                     title="Disponibles"
+                    type={filtroStatus === 0 ? "solid" : "outline"}
                     onPress={() => setFiltroStatus(0)}
+                    buttonStyle={styles.filtroButton}
                 />
                 <Button
                     title="Ocupadas"
+                    type={filtroStatus === 1 ? "solid" : "outline"}
                     onPress={() => setFiltroStatus(1)}
+                    buttonStyle={styles.filtroButton}
                 />
             </View>
             <FlatList

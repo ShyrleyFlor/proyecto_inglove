@@ -98,10 +98,10 @@ const ListarPedidos = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.buttonContainer}>
-                <Button title="Todos" onPress={() => setFiltro('todos')} />
-                <Button title="En Curso" onPress={() => setFiltro('enCurso')} />
-                <Button title="Finalizados" onPress={() => setFiltro('finalizado')} />
+            <View style={styles.filtrosContainer}>
+                <Button title="Todos" onPress={() => setFiltro('todos')}  buttonStyle={styles.filtroButton} />
+                <Button title="En Curso" onPress={() => setFiltro('enCurso')}  buttonStyle={styles.filtroButton} />
+                <Button title="Finalizados" onPress={() => setFiltro('finalizado')}  buttonStyle={styles.filtroButton} />
             </View>
             {cargando ? ( // Mostrar indicador de carga
                 <ActivityIndicator size="large" color="#0000ff" />
@@ -140,8 +140,16 @@ const ListarPedidos = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 10,
-        backgroundColor: '#f9f9f9', // Color de fondo más claro
+        padding: 20,
+        backgroundColor: '#fff',
+    },
+    filtrosContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginBottom: 20,
+    },
+    filtroButton: {
+        paddingHorizontal: 20,
     },
     buttonContainer: {
         flexDirection: 'row',

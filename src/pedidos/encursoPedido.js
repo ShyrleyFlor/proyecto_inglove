@@ -124,6 +124,7 @@ const EnCursoPedido = ({ route, navigation }) => {
 
                 Alert.alert("Pase en caja", "El pedido ha sido finalizado.");
                 navigation.goBack(); // Regresar a la pantalla anterior
+                
             } catch (error) {
                 console.error("Error al finalizar el pedido:", error);
                 Alert.alert("Error", "No se pudo finalizar el pedido.");
@@ -163,7 +164,7 @@ const EnCursoPedido = ({ route, navigation }) => {
                 onChangeText={handleSearch}
             />
             <FlatList
-                data={filteredMenuItems} // Solo mostrar los menús filtrados
+                data={filteredMenuItems}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <View style={styles.menuItem}>
@@ -262,6 +263,9 @@ const styles = StyleSheet.create({
     quantityContainer: {
         flexDirection: 'row',
         alignItems: 'center',
+        width: 60,
+        height: 40,
+        justifyContent: 'space-around',
     },
     buttonContainer: {
         flexDirection: 'row',
