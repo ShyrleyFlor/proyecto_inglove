@@ -88,11 +88,12 @@ const EnCursoPedido = ({ route, navigation }) => {
             if (existingItem) {
                 existingItem.cantidad += 1; // Aumentar la cantidad
             } else {
+                // Asegúrate de que menuItem.id y menuItem.precio estén definidos
                 prevItems.items.push({ menuId: firestore().collection('menu').doc(menuItem.id), cantidad: 1 });
             }
             return { ...prevItems }; // Retornar el pedido actualizado
         });
-        setPrecioTotal(prevTotal => prevTotal + menuItem.precio);
+        setPrecioTotal(prevTotal => prevTotal + menuItem.precio); // Asegúrate de que menuItem.precio esté definido
     };
 
     const disminuirItemPedido = (menuItem) => {
