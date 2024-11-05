@@ -26,44 +26,45 @@ const MostrarPedido = ({ route }) => {
 
         obtenerNumeroMesa();
 
-        const unsubscribePedido = firestore()
-            .collection('pedidos')
-            .where('mesaId', '==', firestore().collection('mesa').doc(mesaId))
-            .onSnapshot(snapshot => {
-                if (!snapshot.empty) {
-                    // Obtiene el primer documento de la lista de resultados
-                    const doc = snapshot.docs[0];
+        const obtenerDatos = async () => {
+            try {
+                const mesaDoc = await firestore().collection('mesa').doc(mesaId).get();
+                if (mesaDoc.exists) {
+                    setNumeroMesa(mesaDoc.data().numero);
+                } else {
+                    console.error("No se encontró la mesa con el ID:", mesaId);
+                }
+
+                const pedidoSnapshot = await firestore()
+                    .collection('pedidos')
+                    .where('mesaId', '==', firestore().collection('mesa').doc(mesaId))
+                    .get();
+
+                if (!pedidoSnapshot.empty) {
+                    const doc = pedidoSnapshot.docs[0];
                     const pedidoData = {
-                        id: doc.id, // Agregar el ID del documento
-                        ...doc.data(), // Agregar los datos del documento
+                        id: doc.id,
+                        ...doc.data(),
                     };
-                    console.log("Datos del pedido:", pedidoData); 
+                    console.log("Datos del pedido:", pedidoData);
                     setPedido(pedidoData);
                     setPrecioTotal(pedidoData.precioTotal);
                 } else {
                     console.log("No se encontraron pedidos para la mesa con ID:", mesaId);
                 }
-            }, error => {
-                console.error("Error al obtener el pedido:", error);
-            });
 
-        const unsubscribeMenu = firestore()
-            .collection('menu')
-            .onSnapshot(snapshot => {
-                const listaMenu = snapshot.docs.map(doc => ({
+                const menuSnapshot = await firestore().collection('menu').get();
+                const listaMenu = menuSnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data(),
                 }));
                 setMenuItems(listaMenu);
-            }, error => {
-                console.error("Error al obtener el menú:", error);
-            });
-
-        return () => {
-            
-            unsubscribePedido();
-            unsubscribeMenu();
+            } catch (error) {
+                console.error("Error al obtener los datos:", error);
+            }
         };
+
+        obtenerDatos();
     }, [mesaId]);
 
 
