@@ -76,4 +76,5 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EditarUsuario;
+export default EditarUsuario;  
+

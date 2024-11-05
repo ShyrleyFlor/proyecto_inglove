@@ -85,4 +85,5 @@ const styles = StyleSheet.create({
     //input: { borderColor: 'black', borderWidth: 1, borderRadius: 5 },
 });
 
-export default FirebaseCrearCuenta;
+export default FirebaseCrearCuenta;  
+

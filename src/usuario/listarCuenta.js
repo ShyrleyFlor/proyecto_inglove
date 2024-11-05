@@ -149,4 +149,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ListarCuenta;
+export default ListarCuenta; 
