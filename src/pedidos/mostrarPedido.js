@@ -37,7 +37,7 @@ const MostrarPedido = ({ route }) => {
                         id: doc.id, // Agregar el ID del documento
                         ...doc.data(), // Agregar los datos del documento
                     };
-                    console.log("Datos del pedido:", pedidoData); // Verificar los datos del pedido en la consola
+                    console.log("Datos del pedido:", pedidoData); 
                     setPedido(pedidoData);
                     setPrecioTotal(pedidoData.precioTotal);
                 } else {

@@ -15,6 +15,7 @@ import ListarCategoria from './src/categorias/listarCategoria';
 import EditCategoria from './src/categorias/editarCategoria';
 import CreateCategoria from './src/categorias/crearCategoria';
 import ListarMenu from './src/menu/listarMenu';
+import ListarMenug from './src/menu/listarMenug';
 import ListarCategoriaG from './src/categorias/listarCategoria-g';
 import EditarMenu from './src/menu/editarMenu';
 import CrearMenu from './src/menu/crearMenu';
@@ -70,7 +71,7 @@ const CategoriaStackScreenGerente = () => {
       />
       <CategoriaStack.Screen
         name="Menu"
-        component={ListarMesasM}
+        component={ListarMenug}
         options={({route}) => ({
           title: route.params?.categoriaNombre || 'Menú',
         })}
