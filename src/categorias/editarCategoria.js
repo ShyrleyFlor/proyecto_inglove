@@ -11,31 +11,49 @@ const EditCategoria = () => {
     const route = useRoute();
     const { categoriaId } = route.params;
 
+    console.log(categoriaId);
+
     useEffect(() => {
+        console.log("categoriaId:", categoriaId); // Esto debería mostrar el ID correcto ahora
         const cargarCategoria = async () => {
-            try {
-                const doc = await firestore().collection('categorias').doc(categoriaId).get();
-                if (doc.exists) {
-                    setCategoria({ id: doc.id, ...doc.data() });
+            if (categoriaId) {
+                try {
+                    const doc = await firestore().collection('categorias').doc(categoriaId).get();
+                    if (doc.exists) {
+                        setCategoria({ id: doc.id, nombre: doc.data().nombre });
+                    } else {
+                        Alert.alert("Error", "La categoría no se encontró.");
+                    }
+                } catch (error) {
+                    console.error("Error al cargar la categoría:", error);
+                } finally {
+                    setLoading(false);
                 }
-            } catch (error) {
-                console.error("Error al cargar la categoría:", error);
-            } finally {
+            } else {
+                Alert.alert("Error", "ID de categoría no válido.");
                 setLoading(false);
             }
         };
         cargarCategoria();
     }, [categoriaId]);
 
+
     const guardarCambios = async () => {
         if (categoria) {
             try {
-                await firestore().collection('categorias').doc(categoria.id).update({
+                const docRef = firestore().collection('categorias').doc(categoria.id);
+                const doc = await docRef.get();
+
+                if (!doc.exists) {
+                    Alert.alert("Error", "La categoría no existe.");
+                    return; // Salir si el documento no existe
+                }
+
+                await docRef.update({
                     nombre: categoria.nombre,
                 });
                 Alert.alert("Éxito", "La categoría ha sido actualizada.");
-                navigation.navigate('ListarCategoriag', { refresh: true });
-                //navigation.goBack();
+                navigation.goBack();
             } catch (error) {
                 console.error("Error al guardar cambios:", error);
                 Alert.alert("Error", "Hubo un problema al actualizar la categoría.");

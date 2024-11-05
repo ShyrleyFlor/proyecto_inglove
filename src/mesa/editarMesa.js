@@ -5,8 +5,8 @@ import firestore from '@react-native-firebase/firestore';
 
 const EditarMesa = ({ visible, onClose, mesa }) => {
     const [numero, setNumero] = useState(mesa?.numero?.toString() || '');
-     // Actualiza el estado cuando cambia la mesa
-     useEffect(() => {
+    // Actualiza el estado cuando cambia la mesa
+    useEffect(() => {
         if (mesa) {
             setNumero(mesa.numero.toString()); // Asegúrate de que sea una cadena
         } else {
@@ -17,6 +17,17 @@ const EditarMesa = ({ visible, onClose, mesa }) => {
     const guardarCambios = async () => {
         if (!numero.trim()) {
             Alert.alert('Error', 'El número de mesa es requerido');
+            return;
+        }
+
+        // Verificar si el número de mesa ya existe
+        const mesaExistente = await firestore()
+            .collection('mesa')
+            .where('numero', '==', parseInt(numero))
+            .get();
+
+        if (!mesaExistente.empty) {
+            Alert.alert('Error', 'El número de mesa ya existe');
             return;
         }
 

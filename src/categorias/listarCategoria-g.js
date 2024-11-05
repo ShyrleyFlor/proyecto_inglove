@@ -19,6 +19,7 @@ const ListarCategoria = () => {
                     ...doc.data(),
                 }));
                 setCategorias(listaCategorias);
+                console.log(listaCategorias);
                 setLoading(false);
             }, error => {
                 console.error("Error al obtener las categorías:", error);
@@ -84,6 +85,10 @@ const ListarCategoria = () => {
             ]
         );
     };
+    const handleEdit = (id) => {
+        console.log(id);
+        navigation.navigate('EditCategoria', { categoriaId: id }); // Navega pasando solo el ID
+    };
 
 
     return (
@@ -119,7 +124,7 @@ const ListarCategoria = () => {
                         <View style={styles.botonesContainer}>
                             <TouchableOpacity
                                 style={styles.botonAccion}
-                                onPress={() => navigation.navigate('EditCategoria', { categoria: item })}
+                                onPress={() => handleEdit(item.id)}
                             >
                                 <Icon
                                     name="edit"
