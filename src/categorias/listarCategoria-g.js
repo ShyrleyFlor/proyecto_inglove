@@ -6,6 +6,7 @@ import { Icon, FAB, Button } from '@rneui/themed';
 
 const ListarCategoria = () => {
     const [categorias, setCategorias] = useState([]);
+    
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
